@@ -1,0 +1,7 @@
+services:
+  mongo-tools:
+    environment:
+      RUN_REPORTS: "1"
+  victim:
+    environment:
+      TEST_MODE: "1"

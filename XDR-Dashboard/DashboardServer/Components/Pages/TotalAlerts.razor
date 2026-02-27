@@ -1,0 +1,351 @@
+﻿@page "/alertsHistory"
+@using System.Text.Json
+@using XdrDashboard.Models
+@using System.Text.Json.Serialization
+
+@inject IHttpClientFactory Factory
+
+<h3>Alerts History</h3>
+
+<div class="text-muted" style="font-size:12px;">
+    Source: <span class="fw-semibold">https://localhost:7140/api/alerts/all</span>
+</div>
+
+@if (loading)
+{
+    <p>Loading...</p>
+}
+else if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">
+        <div class="fw-bold">Errore API</div>
+        <pre style="white-space:pre-wrap; margin:0;">@error</pre>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="fw-bold mb-2">All threats (merged)</div>
+
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Threat</th>
+                            <th>Level</th>
+                            <th>Confidence</th>
+                            <th>Description</th>
+                            <th>Source</th>
+                            <th>Destination</th>
+                            <th>MITRE</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var ev in items)
+                        {
+                            <tr style="cursor:pointer;" @onclick="() => Toggle(ev)">
+                                <td style="white-space:nowrap;">@ev.ts.ToString("yyyy-MM-dd HH:mm:ss")</td>
+
+                                <td>
+                                    @* ✅ fix: classifica warning=LOCAL, syn flood=NETWORK *@
+                                    @KindBadge(EffectiveKind(ev))
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-secondary">@Pretty(ev.title)</span>
+                                </td>
+
+                                <td>
+                                    @LevelBadge(ev.threatLevel)
+                                </td>
+
+                                <td>
+                                    @ConfidenceBadge(ev.confidence)
+                                </td>
+
+                                <td style="max-width:520px;">
+                                    <div class="text-truncate" title="@ev.message">@ev.message</div>
+                                </td>
+
+                                <td style="max-width:220px;">
+                                    <div class="text-truncate" title="@(ev.src ?? "")">@(ev.src ?? "-")</div>
+                                </td>
+
+                                <td style="max-width:220px;">
+                                    <div class="text-truncate" title="@(ev.dst ?? "")">@(ev.dst ?? "-")</div>
+                                </td>
+
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(ev.mitreId))
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(ev.mitreUrl))
+                                        {
+                                            <a class="badge bg-info text-dark text-decoration-none"
+                                               href="@ev.mitreUrl" target="_blank"
+                                               title="@ev.mitreUrl"
+                                               @onclick:stopPropagation="true">
+                                                @ev.mitreId
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-info text-dark">@ev.mitreId</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                            </tr>
+
+                            @if (IsOpen(ev))
+                            {
+                                <tr>
+                                    <td colspan="9">
+                                        <pre style="white-space:pre-wrap; margin:0; font-size:12px;">
+            @JsonSerializer.Serialize(ev.payload, new JsonSerializerOptions { WriteIndented = true })
+                                                    </pre>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (items.Count == 0)
+            {
+                <div class="text-muted">Nessuna minaccia trovata.</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private const string ApiBase = "https://localhost:7140/";
+
+    private bool loading = true;
+    private string? error;
+
+    private int limit = 200;
+
+    private List<TimelineDtoUi> items = new();
+    private DateTime? nextBefore = null;
+
+    private Stack<DateTime?> beforeStack = new();
+    private HashSet<string> openRows = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync(before: null);
+    }
+
+    private async Task Refresh()
+    {
+        beforeStack.Clear();
+        openRows.Clear();
+        await LoadAsync(before: null);
+    }
+
+    private async Task Next()
+    {
+        beforeStack.Push(currentBefore);
+        await LoadAsync(before: nextBefore);
+    }
+
+    private async Task Prev()
+    {
+        if (beforeStack.Count == 0) return;
+        var prevBefore = beforeStack.Pop();
+        await LoadAsync(before: prevBefore);
+    }
+
+    private DateTime? currentBefore = null;
+
+    private async Task LoadAsync(DateTime? before)
+    {
+        loading = true;
+        error = null;
+        items = new();
+        openRows.Clear();
+        StateHasChanged();
+
+        try
+        {
+            currentBefore = before;
+
+            var http = Factory.CreateClient();
+            http.BaseAddress = new Uri(ApiBase);
+
+            var url = $"api/alerts/all?limit={limit}";
+            if (before is not null)
+                url += $"&before={Uri.EscapeDataString(before.Value.ToUniversalTime().ToString("o"))}";
+
+            var resp = await http.GetAsync(url);
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                error = $"HTTP {(int)resp.StatusCode} {resp.ReasonPhrase}\n\n{body}";
+                return;
+            }
+
+            var jsonOpts = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            jsonOpts.Converters.Add(new JsonStringEnumConverter());
+
+            var data = JsonSerializer.Deserialize<AlertsAllResponse>(body, jsonOpts);
+
+            items = data?.items ?? new List<TimelineDtoUi>();
+            nextBefore = data?.nextBefore;
+
+            if (items.Count == 0)
+                nextBefore = null;
+        }
+        catch (Exception ex)
+        {
+            error = ex.ToString();
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Toggle(TimelineDtoUi ev)
+    {
+        var key = $"{ev.ts:o}|{ev.kind}|{ev.title}|{ev.message}";
+        if (!openRows.Add(key))
+            openRows.Remove(key);
+    }
+
+    private bool IsOpen(TimelineDtoUi ev)
+    {
+        var key = $"{ev.ts:o}|{ev.kind}|{ev.title}|{ev.message}";
+        return openRows.Contains(key);
+    }
+
+    private class AlertsAllResponse
+    {
+        public List<TimelineDtoUi>? items { get; set; }
+        public DateTime? nextBefore { get; set; }
+    }
+
+    private class TimelineDtoUi
+    {
+        public DateTime ts { get; set; }
+        public string kind { get; set; } = "";
+        public string title { get; set; } = "";
+        public string message { get; set; } = "";
+        public string? src { get; set; }
+        public string? dst { get; set; }
+
+        public bool? malicious { get; set; }
+
+        public ConfidenceLevel confidence { get; set; } = ConfidenceLevel.Unknown;
+        public ThreatLevel threatLevel { get; set; } = ThreatLevel.Unknown;
+
+        public int? stixId { get; set; }
+        public string? mitreId { get; set; }
+        public string? mitreUrl { get; set; }
+
+        public JsonElement payload { get; set; }
+    }
+
+    // ✅ qui decidiamo la categoria senza cambiare l’HTML (warning=LOCAL, syn flood=NETWORK)
+    private static string EffectiveKind(TimelineDtoUi ev)
+    {
+        var k = (ev.kind ?? "").ToLowerInvariant();
+        var t = (ev.title ?? "").ToLowerInvariant();
+        var m = (ev.message ?? "").ToLowerInvariant();
+
+        // NETWORK (syn flood ecc.)
+        if (k.Contains("network") || k.Contains("syn") || k.Contains("flood") ||
+            t.Contains("syn") || t.Contains("flood") ||
+            m.Contains("syn") || m.Contains("flood") ||
+            t.Contains("ddos") || m.Contains("ddos") ||
+            t.Contains("dos") || m.Contains("dos") ||
+            t.Contains("arp") || m.Contains("arp") || t.Contains("spoof") || m.Contains("spoof"))
+            return "network";
+
+        // LOCAL (warning/localwarning ecc.)
+        if (k.Contains("local") || k.Contains("warning") ||
+            t.Contains("warning") || m.Contains("warning") ||
+            t.Contains("chmod") || m.Contains("chmod") ||
+            t.Contains("process") || m.Contains("process") ||
+            t.Contains("file") || m.Contains("file"))
+            return "local";
+
+        // MALWARE
+        if (k.Contains("malware") || t.Contains("malware") || m.Contains("malware") ||
+            t.Contains("virustotal") || m.Contains("virustotal"))
+            return "malware";
+
+        return k; // fallback (se già "network/local/malware" lo prende KindBadge)
+    }
+
+    // ===== BADGES (lasciata uguale) =====
+
+    private RenderFragment KindBadge(string kind) => builder =>
+    {
+        var k = (kind ?? "").ToLowerInvariant();
+
+        var (text, css) =
+            k.Contains("network") ? ("NETWORK", "badge bg-primary") :
+            k.Contains("local") ? ("LOCAL", "badge bg-secondary") :
+            k.Contains("malware") ? ("MALWARE", "badge bg-dark") :
+            ("OTHER", "badge bg-light text-dark border");
+
+        builder.OpenElement(0, "span");
+        builder.AddAttribute(1, "class", css);
+        builder.AddContent(2, text);
+        builder.CloseElement();
+    };
+
+    private RenderFragment LevelBadge(ThreatLevel level) => builder =>
+    {
+        var (text, css) = level switch
+        {
+            ThreatLevel.High => ("MENACE", "badge bg-danger"),
+            ThreatLevel.Medium => ("WARNING", "badge bg-warning text-dark"),
+            ThreatLevel.Low => ("MOSTLY SAFE", "badge bg-success"),
+            _ => ("UNKNOWN", "badge bg-secondary")
+        };
+
+        builder.OpenElement(0, "span");
+        builder.AddAttribute(1, "class", css);
+        builder.AddContent(2, text);
+        builder.CloseElement();
+    };
+
+    private static string Pretty(string? s)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return "-";
+        s = s.Replace("_", " ").Replace("-", " ");
+        return System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLowerInvariant());
+    }
+
+    private RenderFragment ConfidenceBadge(ConfidenceLevel c) => builder =>
+    {
+        var (text, css) = c switch
+        {
+            ConfidenceLevel.High => ("High", "badge bg-dark"),
+            ConfidenceLevel.Medium => ("Medium", "badge bg-secondary"),
+            ConfidenceLevel.Low => ("Low", "badge bg-light text-dark border"),
+            _ => ("Unknown", "badge bg-light text-muted border")
+        };
+
+        builder.OpenElement(0, "span");
+        builder.AddAttribute(1, "class", css);
+        builder.AddContent(2, text);
+        builder.CloseElement();
+    };
+}

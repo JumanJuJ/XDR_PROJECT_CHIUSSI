@@ -1,0 +1,324 @@
+version: "3.9"
+
+services:
+  attacker:
+    build: ./attacker
+    container_name: attacker
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.10
+    tty: true
+    stdin_open: true
+    environment:
+      TARGET_IP: 172.25.0.20
+      TARGET2_IP: 172.25.0.21
+    sysctls:
+       net.ipv6.conf.all.disable_ipv6: "1"
+       net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    command: ["sh", "attacks.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles:
+      - test
+
+  victim:
+    build:
+      context: ..
+      dockerfile: Docker/victim/Dockerfile
+    container_name: victim
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.20
+    tty: true
+    stdin_open: true
+    user: root
+    privileged: true
+    environment:
+      MANAGER_URL: http://manager:8080
+      XDR_LOG_PATH: /app/XDR-AgentData/logs
+      XDR_PCAP_PATH: /app/XDR-AgentData/captures
+      XDR_SCRIPT_PATH: /app/XDR-AgentData/bashScripts
+      XDR_MODE: live
+      XDR_MANAGER_URL: http://manager:8080/events
+      XDR_MANAGER_URL_LOCAL: http://manager:8080/localEvents
+
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    volumes:
+      - ./victim/data:/data
+      - ../Backend/XDR-Agent/logs:/app/XDR-AgentData/logs
+      - ../Backend/XDR-Agent/captures:/app/XDR-AgentData/captures
+      - ../Backend/XDR-Agent/bashScripts:/app/XDR-AgentData/bashScripts
+
+
+  manager:
+    build:
+      context: ..
+      dockerfile: Docker/manager/Dockerfile
+    container_name: manager
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.30
+    tty: true
+    stdin_open: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../Backend/XDR-Manager/logs:/app/serverData/logs
+      - ../Backend/XDR-Manager/logs:/app/detectionData/logs
+      - ../Backend/XDR-Manager/captures:/app/detectionData/captures
+    environment:
+      MONGO_DB_CONNECTION: mongodb://${CONFIG_MONGODB_ADMIN_USER}:${CONFIG_MONGODB_ADMIN_PASSWD}@mongo:27017/?authSource=admin
+      MONGO_DB: ${DB_NAME}
+      ASPNETCORE_URLS: http://+:8080
+      SERVER_LOG_PATH: /app/serverData/logs
+      DETECTION_LOG_PATH: /app/detectionData/logs
+      XDR_MANAGER_SCRIPT_PATH: /app/XDR-Manager/bashScripts
+    depends_on:
+      - mongo
+
+  host2:
+    image: alpine:3.20
+    container_name: host2
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.21
+    tty: true
+    stdin_open: true
+    command: ["sh", "-c", "apk add --no-cache iproute2 tcpdump && sleep infinity"]
+    profiles:
+      - test
+
+  ddos_bot_1:
+    build: { context: ./attacker }
+    tty: true
+    stdin_open: true
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.50
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add: [NET_RAW, NET_ADMIN]
+    command: ["bash", "attackDdos.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles: 
+      - test
+    environment:
+      CONTAINER_ROLE: double_attack
+
+  ddos_bot_2:
+    build: { context: ./attacker }
+    tty: true
+    stdin_open: true
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.51
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add: [NET_RAW, NET_ADMIN]
+    command: ["bash", "attackDdos.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles: 
+      - test
+
+  ddos_bot_3:
+    build: { context: ./attacker }
+    tty: true
+    stdin_open: true
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.52
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add: [NET_RAW, NET_ADMIN]
+    command: ["bash", "attackDdos.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles: 
+      - test
+
+  ddos_bot_4:
+    build: { context: ./attacker }
+    tty: true
+    stdin_open: true
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.53
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add: [NET_RAW, NET_ADMIN]
+    command: ["bash", "attackDdos.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles: 
+      - test
+
+  ddos_bot_5:
+    build: { context: ./attacker }
+    tty: true
+    stdin_open: true
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.54
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add: [NET_RAW, NET_ADMIN]
+    command: ["bash", "attackDdos.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles: 
+      - test
+
+  ddos_bot_6:
+    build: { context: ./attacker }
+    tty: true
+    stdin_open: true
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.55
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add: [NET_RAW, NET_ADMIN]
+    command: ["bash", "attackDdos.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles: 
+      - test
+
+  ddos_bot_7:
+    build: { context: ./attacker }
+    tty: true
+    stdin_open: true
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.56
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add: [NET_RAW, NET_ADMIN]
+    command: ["bash", "attackDdos.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles: 
+      - test
+
+  ddos_bot_8:
+    build: { context: ./attacker }
+    tty: true
+    stdin_open: true
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.57
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add: [NET_RAW, NET_ADMIN]
+    command: ["bash", "attackDdos.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles: 
+      - test
+
+  ddos_bot_9:
+    build: { context: ./attacker }
+    tty: true
+    stdin_open: true
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.58
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add: [NET_RAW, NET_ADMIN]
+    command: ["bash", "attackDdos.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles: 
+      - test
+
+  ddos_bot_10:
+    build: { context: ./attacker }
+    tty: true
+    stdin_open: true
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.59
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    cap_add: [NET_RAW, NET_ADMIN]
+    command: ["bash", "attackDdos.sh"]
+    volumes:
+      - ./attacker/logs:/attacks/logs
+    profiles: 
+      - test
+
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    restart: always
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.40
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${CONFIG_MONGODB_ADMIN_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${CONFIG_MONGODB_ADMIN_PASSWD}
+    volumes:
+      - db_data:/data/db
+    ports:
+      - "27017:27017"
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_ui
+    restart: always
+    networks:
+      cyber_net:
+        ipv4_address: 172.25.0.41
+    depends_on:
+      - mongo
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${CONFIG_MONGODB_ADMIN_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${CONFIG_MONGODB_ADMIN_PASSWD}
+      ME_CONFIG_MONGODB_URL: mongodb://${CONFIG_MONGODB_ADMIN_USER}:${CONFIG_MONGODB_ADMIN_PASSWD}@mongo:27017/?authSource=admin
+      ME_CONFIG_BASICAUTH: "false"
+
+
+  mongo-tools:
+    image: mongo:6
+    container_name: mongo-tools
+    networks:
+      - cyber_net
+    volumes:
+      - ./backups:/backups
+      - ./tests:/tests
+    environment:
+      RUN_REPORTS: "0"
+    entrypoint: ["/bin/bash", "/tests/entrypoint.sh"]
+    depends_on:
+      - mongo
+
+volumes:
+  db_data:
+
+networks:
+  cyber_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+          gateway: 172.25.0.1

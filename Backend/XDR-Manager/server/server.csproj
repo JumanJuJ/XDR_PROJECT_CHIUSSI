@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="3.6.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+  <ProjectReference Include="..\XDR-Classes\XDR-Classes.csproj" />
+</ItemGroup>
+
+<ItemGroup>
+  <ProjectReference Include="..\XDR-Detection\XDR-Detection.csproj" />
+</ItemGroup>
+
+<ItemGroup>
+  <ProjectReference Include="..\XDR-Response\XDR-Response.csproj" />
+</ItemGroup>
+
+<ItemGroup>
+  <ProjectReference Include="..\ErrorHandler\ErrorHandler.csproj" />
+</ItemGroup>
+
+<PropertyGroup>
+  <UserSecretsId>xdr-manager-secrets</UserSecretsId>
+</PropertyGroup>
+
+
+
+</Project>

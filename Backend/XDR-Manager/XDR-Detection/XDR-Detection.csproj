@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>XDR_Detection</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="3.6.0" />
+    
+  </ItemGroup>
+
+  <ItemGroup>
+  <ProjectReference Include="..\XDR-Classes\XDR-Classes.csproj" />
+</ItemGroup>
+
+  <ItemGroup>
+  <ProjectReference Include="..\services\Services.csproj" />
+</ItemGroup>
+
+  <ItemGroup>
+  <ProjectReference Include="..\ErrorHandler\ErrorHandler.csproj" />
+</ItemGroup>
+
+</Project>

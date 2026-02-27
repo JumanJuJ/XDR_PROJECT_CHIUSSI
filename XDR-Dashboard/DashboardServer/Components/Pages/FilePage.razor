@@ -1,0 +1,174 @@
+﻿@page "/files"
+@using System.Text.Json
+@using System.Net.Http.Json
+@inject IHttpClientFactory Factory
+
+<h3>Files Scanned</h3>
+
+<div class="text-muted" style="font-size:12px;">
+    Source: <span class="fw-semibold">https://localhost:7140/api/localFiles</span>
+</div>
+
+@if (loading)
+{
+    <p>Loading...</p>
+}
+else if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">
+        <div class="fw-bold">Errore API</div>
+        <pre style="white-space:pre-wrap; margin:0;">@error</pre>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Path</th>
+                            <th>Mode</th>
+                            <th>Size</th>
+                            <th>Inode</th>
+                            <th>UID:GID</th>
+                            <th>SHA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var f in items)
+                        {
+                            <tr>
+                                <td style="white-space:nowrap;">@FormatEpochUtc(f.Mtime)</td>
+
+                                <td style="max-width:520px;">
+                                    <div class="fw-semibold text-truncate" title="@f.Path">@f.Path</div>
+                                    <div class="text-muted" style="font-size:12px;">id: @f.Id</div>
+                                </td>
+
+                                <td><span class="badge bg-secondary">@((string.IsNullOrWhiteSpace(f.Mode) ? "-" : f.Mode))</span></td>
+                                <td>@(f.Size?.ToString() ?? "-")</td>
+                                <td>@(f.Inode?.ToString() ?? "-")</td>
+
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        @(f.Uid?.ToString() ?? "-"):@(f.Gid?.ToString() ?? "-")
+                                    </span>
+                                </td>
+                                <td style="white-space:nowrap;">
+                                    <code>@(string.IsNullOrWhiteSpace(f.Sha) ? "-" : f.Sha)</code>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (items.Count == 0)
+            {
+                <div class="text-muted">Nessun file trovato.</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private const string ApiBase = "https://localhost:7140/";
+
+    private bool loading = true;
+    private string? error;
+
+    private List<LocalFileEventDto> items = new();
+    private int skip = 0;
+    private int limit = 500;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task Refresh() => await LoadAsync();
+
+    private async Task Prev()
+    {
+        skip = Math.Max(0, skip - limit);
+        await LoadAsync();
+    }
+
+    private async Task Next()
+    {
+        skip += limit;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        error = null;
+        items = new();
+
+        try
+        {
+            var http = Factory.CreateClient();
+            http.BaseAddress = new Uri(ApiBase);
+
+            var url = $"api/localFiles?limit={limit}&skip={skip}";
+            var resp = await http.GetAsync(url);
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                error = $"HTTP {(int)resp.StatusCode} {resp.ReasonPhrase}\n\n{body}";
+                return;
+            }
+
+            var data = JsonSerializer.Deserialize<List<LocalFileEventDto>>(
+                body,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
+
+            items = data ?? new List<LocalFileEventDto>();
+        }
+        catch (Exception ex)
+        {
+            error = ex.ToString();
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private class LocalFileEventDto
+    {
+        public string? Id { get; set; }
+        public string? Path { get; set; }
+        public long? Inode { get; set; }
+        public long? Size { get; set; }
+        public string? Mode { get; set; }
+        public long? Mtime { get; set; }
+        public long? Uid { get; set; }
+        public long? Gid { get; set; }
+        public string? Sha { get; set; }
+    }
+
+    private static string ShortSha(string? sha)
+        => string.IsNullOrWhiteSpace(sha) ? "-" : (sha.Length <= 12 ? sha : $"{sha[..12]}…");
+
+    private static string FormatEpochUtc(long? epochSeconds)
+    {
+        if (epochSeconds is null || epochSeconds <= 0) return "-";
+        try
+        {
+            var dt = DateTimeOffset.FromUnixTimeSeconds(epochSeconds.Value).UtcDateTime;
+            return dt.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+        catch
+        {
+            return epochSeconds.Value.ToString();
+        }
+    }
+}

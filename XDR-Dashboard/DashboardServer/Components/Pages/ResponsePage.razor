@@ -1,0 +1,234 @@
+﻿@page "/responses"
+@using System.Text.Json
+@inject IHttpClientFactory Factory
+
+<h3>XDR Responses</h3>
+
+<div class="text-muted" style="font-size:12px;">
+    Source: <span class="fw-semibold">https://localhost:7140/api/responses</span>
+</div>
+
+<div class="d-flex gap-2 my-3 align-items-center flex-wrap">
+    <button class="btn btn-sm btn-outline-secondary" @onclick="Refresh" disabled="@loading">↻ Refresh</button>
+
+    <button class="btn btn-sm btn-outline-secondary" @onclick="Prev"
+            disabled="@(loading || skip == 0)">
+        ← Prev
+    </button>
+
+    <button class="btn btn-sm btn-outline-secondary" @onclick="Next"
+            disabled="@(loading || items.Count < limit)">
+        Next →
+    </button>
+
+    <div class="ms-auto d-flex gap-2 align-items-center">
+        <span class="text-muted" style="font-size:12px;">Skip</span>
+        <input class="form-control form-control-sm" style="width:110px;"
+               type="number" min="0" @bind="skip" />
+
+        <span class="text-muted" style="font-size:12px;">Limit</span>
+        <input class="form-control form-control-sm" style="width:110px;"
+               type="number" min="1" max="5000" @bind="limit" />
+    </div>
+</div>
+
+@if (loading)
+{
+    <p>Loading...</p>
+}
+else if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">
+        <div class="fw-bold">Errore API</div>
+        <pre style="white-space:pre-wrap; margin:0;">@error</pre>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th style="white-space:nowrap;">_id</th>
+                            <th style="white-space:nowrap;">menaceType</th>
+                            <th style="white-space:nowrap;">level</th>
+                            <th style="white-space:nowrap;">action</th>
+                            <th style="white-space:nowrap;">date</th>
+                            <th style="min-width:280px;">message</th>
+                            <th style="white-space:nowrap;">path</th>
+                            <th style="white-space:nowrap;">sha256</th>
+                            <th style="white-space:nowrap;">inode</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in items)
+                        {
+                            <tr>
+                                <td style="white-space:nowrap;">
+                                    <code title="@r._id">@Trunc(r._id, 24)</code>
+                                </td>
+
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(r.menaceType))
+                                    {
+                                        <span class="badge bg-secondary">@r.menaceType</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+
+                                <td style="white-space:nowrap;">
+                                    @if (!string.IsNullOrWhiteSpace(r.level))
+                                    {
+                                        <span class="badge bg-dark">@r.level</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+
+                                <td style="white-space:nowrap;">
+                                    @(string.IsNullOrWhiteSpace(r.action) ? "-" : r.action)
+                                </td>
+
+                                <td style="white-space:nowrap;">@FormatIsoUtc(r.date)</td>
+
+                                <td style="max-width:520px;">
+                                    <span class="text-truncate d-inline-block" style="max-width:520px;"
+                                          title="@r.message">
+                                        @(string.IsNullOrWhiteSpace(r.message) ? "-" : r.message)
+                                    </span>
+                                </td>
+
+                                <td style="max-width:260px;">
+                                    <code class="text-truncate d-inline-block" style="max-width:260px;"
+                                          title="@r.path">
+                                        @(string.IsNullOrWhiteSpace(r.path) ? "-" : r.path)
+                                    </code>
+                                </td>
+
+                                <td style="max-width:320px;">
+                                    <code class="text-truncate d-inline-block" style="max-width:320px;"
+                                          title="@r.sha256">
+                                        @(string.IsNullOrWhiteSpace(r.sha256) ? "-" : r.sha256)
+                                    </code>
+                                </td>
+
+                                <td style="white-space:nowrap;">
+                                    @(r.inode.HasValue? r.inode.Value.ToString() : "-")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (items.Count == 0)
+            {
+                <div class="text-muted">Nessuna response trovata.</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private const string ApiBase = "https://localhost:7140/";
+
+    private bool loading = true;
+    private string? error;
+
+    private List<ResponseDto> items = new();
+    private int skip = 0;
+    private int limit = 500;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task Refresh() => await LoadAsync();
+
+    private async Task Prev()
+    {
+        skip = Math.Max(0, skip - limit);
+        await LoadAsync();
+    }
+
+    private async Task Next()
+    {
+        skip += limit;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        error = null;
+        items = new();
+
+        try
+        {
+            var http = Factory.CreateClient();
+            http.BaseAddress = new Uri(ApiBase);
+
+            var url = $"api/responses?limit={limit}&skip={skip}";
+            var resp = await http.GetAsync(url);
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                error = $"HTTP {(int)resp.StatusCode} {resp.ReasonPhrase}\n\n{body}";
+                return;
+            }
+
+            var data = JsonSerializer.Deserialize<List<ResponseDto>>(
+                body,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
+
+            items = data ?? new List<ResponseDto>();
+        }
+        catch (Exception ex)
+        {
+            error = ex.ToString();
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private sealed class ResponseDto
+    {
+        public string? _id { get; set; }
+        public string? menaceType { get; set; }
+        public string? level { get; set; }
+        public string? action { get; set; }
+        public string? date { get; set; }
+        public string? message { get; set; }
+
+        // presenti solo per privilege escalation
+        public string? path { get; set; }
+        public string? sha256 { get; set; }
+        public long? inode { get; set; }
+    }
+
+    private static string FormatIsoUtc(string? iso)
+    {
+        if (string.IsNullOrWhiteSpace(iso)) return "-";
+        if (DateTime.TryParse(iso, null, System.Globalization.DateTimeStyles.AdjustToUniversal, out var dt))
+            return dt.ToString("yyyy-MM-dd HH:mm:ss");
+        return iso!;
+    }
+
+    private static string Trunc(string? s, int max)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return "-";
+        return s.Length <= max ? s : s.Substring(0, max) + "…";
+    }
+}

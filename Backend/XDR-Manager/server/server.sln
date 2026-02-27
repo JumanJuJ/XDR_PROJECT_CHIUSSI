@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36603.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "server", "server.csproj", "{677C3598-9979-478A-A902-AA98A01ED078}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XDR-Classes", "..\XDR-Classes\XDR-Classes.csproj", "{975FD6CD-1B92-BA04-4D0A-C17D3D991FD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XDR-Detection", "..\XDR-Detection\XDR-Detection.csproj", "{FBA6722F-A437-CB28-0F12-B7B9D4A8ADB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XDR-Response", "..\XDR-Response\XDR-Response.csproj", "{A0825CC1-7C23-6EBA-D032-A804FD098592}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "..\services\Services.csproj", "{6383C15B-5AA6-14CC-E6DE-B8C238620A33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorHandler", "..\ErrorHandler\ErrorHandler.csproj", "{CDC68E64-66A5-F2E9-DF50-A1344DD063A8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{677C3598-9979-478A-A902-AA98A01ED078}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{677C3598-9979-478A-A902-AA98A01ED078}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{677C3598-9979-478A-A902-AA98A01ED078}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{677C3598-9979-478A-A902-AA98A01ED078}.Release|Any CPU.Build.0 = Release|Any CPU
+		{975FD6CD-1B92-BA04-4D0A-C17D3D991FD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{975FD6CD-1B92-BA04-4D0A-C17D3D991FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{975FD6CD-1B92-BA04-4D0A-C17D3D991FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{975FD6CD-1B92-BA04-4D0A-C17D3D991FD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBA6722F-A437-CB28-0F12-B7B9D4A8ADB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBA6722F-A437-CB28-0F12-B7B9D4A8ADB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBA6722F-A437-CB28-0F12-B7B9D4A8ADB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBA6722F-A437-CB28-0F12-B7B9D4A8ADB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0825CC1-7C23-6EBA-D032-A804FD098592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0825CC1-7C23-6EBA-D032-A804FD098592}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0825CC1-7C23-6EBA-D032-A804FD098592}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0825CC1-7C23-6EBA-D032-A804FD098592}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6383C15B-5AA6-14CC-E6DE-B8C238620A33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6383C15B-5AA6-14CC-E6DE-B8C238620A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6383C15B-5AA6-14CC-E6DE-B8C238620A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6383C15B-5AA6-14CC-E6DE-B8C238620A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDC68E64-66A5-F2E9-DF50-A1344DD063A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDC68E64-66A5-F2E9-DF50-A1344DD063A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDC68E64-66A5-F2E9-DF50-A1344DD063A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDC68E64-66A5-F2E9-DF50-A1344DD063A8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E535B870-8C51-4D7E-937C-D3D44D5B664D}
+	EndGlobalSection
+EndGlobal

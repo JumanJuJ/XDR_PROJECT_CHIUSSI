@@ -1,0 +1,5 @@
+{"ts":1772224422,"pid":1,"ppid":0,"state":"S","uid":0,"gid":0,"start":1772224356,"comm":"bash","exe":"/bin/bash","cwd":"/app","cmdline":"bash /usr/local/bin/start.sh","vmrss_kb":1280,"vmsize_kb":2392}
+{"ts":1772224422,"pid":1337,"ppid":1,"state":"S","uid":0,"gid":0,"start":1772224419,"comm":"invoice.pdf.bin","exe":"/bin/xdrtest/invoice.pdf.bin","cwd":"/app","cmdline":"/bin/xdrtest/invoice.pdf.bin","vmrss_kb":384,"vmsize_kb":852}
+{"ts":1772224422,"pid":1518,"ppid":7,"state":"S","uid":0,"gid":0,"start":1772224422,"comm":"bash","exe":"/bin/bash","cwd":"/app","cmdline":"/bin/bash /app/XDR-AgentData/bashScripts/processCollection.sh","vmrss_kb":1664,"vmsize_kb":2424}
+{"ts":1772224422,"pid":17,"ppid":1,"state":"S","uid":0,"gid":0,"start":1772224357,"comm":"nc","exe":"/usr/bin/nc","cwd":"/app","cmdline":"nc -l -p 2375","vmrss_kb":512,"vmsize_kb":1512}
+{"ts":1772224422,"pid":7,"ppid":1,"state":"S","uid":0,"gid":0,"start":1772224356,"comm":"dotnet","exe":"/usr/share/dotnet/dotnet","cwd":"/app","cmdline":"dotnet /app/XDR-Agent/XDR-Agent.dll --mode live","vmrss_kb":54904,"vmsize_kb":273036260}

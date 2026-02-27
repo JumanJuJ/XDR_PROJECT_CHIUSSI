@@ -1,0 +1,147 @@
+{
+  "testType": "LOCAL_WARNING",
+  "TimestampUtc": "2026-02-27T11:01:39.163Z",
+  "count": 5,
+  "incidents": [
+    {
+      "_id": "69a07e5cf224739e8b785fd4",
+      "incidentId": 410,
+      "date": "2026-02-26T17:09:48.602Z",
+      "type": "SYN_FLOOD",
+      "alert": {
+        "stixId": 1,
+        "srcIp": "172.25.0.10",
+        "dstIp": "172.25.0.20",
+        "srcPort": 1904,
+        "dstPort": 2375,
+        "synCount": 5,
+        "windowStart": {
+          "low": 0,
+          "high": 0,
+          "unsigned": false
+        },
+        "windowEnd": {
+          "low": 0,
+          "high": 0,
+          "unsigned": false
+        },
+        "malicious": true,
+        "attackType": "DoS",
+        "message": "DoS SYN flood on 172.25.0.20:2375. SYN=5 in 0s, ",
+        "detectedAtUtc": "2026-02-26T17:09:48.602Z"
+      }
+    },
+    {
+      "_id": "69a07e24f224739e8b785fa2",
+      "incidentId": 409,
+      "date": "2026-02-26T17:08:52.593Z",
+      "type": "SYN_FLOOD",
+      "alert": {
+        "stixId": 1,
+        "srcIp": "172.25.0.10",
+        "dstIp": "172.25.0.20",
+        "srcPort": 1892,
+        "dstPort": 2375,
+        "synCount": 5,
+        "windowStart": {
+          "low": 0,
+          "high": 0,
+          "unsigned": false
+        },
+        "windowEnd": {
+          "low": 0,
+          "high": 0,
+          "unsigned": false
+        },
+        "malicious": true,
+        "attackType": "DoS",
+        "message": "DoS SYN flood on 172.25.0.20:2375. SYN=5 in 0s, ",
+        "detectedAtUtc": "2026-02-26T17:08:52.593Z"
+      }
+    },
+    {
+      "_id": "69a07d1b533faf713a2ae672",
+      "incidentId": 408,
+      "date": "2026-02-26T17:04:27.716Z",
+      "type": "SYN_FLOOD",
+      "alert": {
+        "stixId": 1,
+        "srcIp": "172.25.0.10",
+        "dstIp": "172.25.0.20",
+        "srcPort": 1900,
+        "dstPort": 2375,
+        "synCount": 5,
+        "windowStart": {
+          "low": 0,
+          "high": 0,
+          "unsigned": false
+        },
+        "windowEnd": {
+          "low": 0,
+          "high": 0,
+          "unsigned": false
+        },
+        "malicious": true,
+        "attackType": "DoS",
+        "message": "DoS SYN flood on 172.25.0.20:2375. SYN=5 in 0s, ",
+        "detectedAtUtc": "2026-02-26T17:04:27.716Z"
+      }
+    },
+    {
+      "_id": "69a01b148b47282c9cde2096",
+      "incidentId": 407,
+      "date": "2026-02-26T10:06:12.239Z",
+      "type": "SYN_FLOOD",
+      "alert": {
+        "stixId": 1,
+        "srcIp": "172.25.0.10",
+        "dstIp": "172.25.0.20",
+        "srcPort": 2599,
+        "dstPort": 2375,
+        "synCount": 5,
+        "windowStart": {
+          "low": 0,
+          "high": 0,
+          "unsigned": false
+        },
+        "windowEnd": {
+          "low": 0,
+          "high": 0,
+          "unsigned": false
+        },
+        "malicious": true,
+        "attackType": "DoS",
+        "message": "DoS SYN flood on 172.25.0.20:2375. SYN=5 in 0s, ",
+        "detectedAtUtc": "2026-02-26T10:06:12.239Z"
+      }
+    },
+    {
+      "_id": "69a0154bd05c0be69e3cc2a3",
+      "incidentId": 406,
+      "date": "2026-02-26T09:41:31.643Z",
+      "type": "SYN_FLOOD",
+      "alert": {
+        "stixId": 1,
+        "srcIp": "172.25.0.10",
+        "dstIp": "172.25.0.20",
+        "srcPort": 2324,
+        "dstPort": 2375,
+        "synCount": 5,
+        "windowStart": {
+          "low": 0,
+          "high": 0,
+          "unsigned": false
+        },
+        "windowEnd": {
+          "low": 0,
+          "high": 0,
+          "unsigned": false
+        },
+        "malicious": true,
+        "attackType": "DoS",
+        "message": "DoS SYN flood on 172.25.0.20:2375. SYN=5 in 0s, ",
+        "detectedAtUtc": "2026-02-26T09:41:31.643Z"
+      }
+    }
+  ]
+}

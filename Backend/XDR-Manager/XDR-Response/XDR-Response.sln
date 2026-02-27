@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36603.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XDR-Response", "XDR-Response.csproj", "{5FA05992-812D-42FF-85B0-C10766AEF3AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "..\Services\Services.csproj", "{6383C15B-5AA6-14CC-E6DE-B8C238620A33}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5FA05992-812D-42FF-85B0-C10766AEF3AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FA05992-812D-42FF-85B0-C10766AEF3AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FA05992-812D-42FF-85B0-C10766AEF3AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FA05992-812D-42FF-85B0-C10766AEF3AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6383C15B-5AA6-14CC-E6DE-B8C238620A33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6383C15B-5AA6-14CC-E6DE-B8C238620A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6383C15B-5AA6-14CC-E6DE-B8C238620A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6383C15B-5AA6-14CC-E6DE-B8C238620A33}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {40C58E5B-B8C3-4582-9073-9D9CB1C472EF}
+	EndGlobalSection
+EndGlobal

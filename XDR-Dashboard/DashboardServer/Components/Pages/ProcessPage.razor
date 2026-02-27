@@ -1,0 +1,187 @@
+﻿@page "/processes"
+@using System.Text.Json
+@inject IHttpClientFactory Factory
+
+<h3>Processes Scanned</h3>
+
+<div class="text-muted" style="font-size:12px;">
+    Source: <span class="fw-semibold">https://localhost:7140/api/localProcesses</span>
+</div>
+
+@if (loading)
+{
+    <p>Loading...</p>
+}
+else if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">
+        <div class="fw-bold">Errore API</div>
+        <pre style="white-space:pre-wrap; margin:0;">@error</pre>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>PID</th>
+                            <th>PPID</th>
+                            <th>User</th>
+                            <th>State</th>
+                            <th>Comm</th>
+                            <th>Exe</th>
+                            <th>Cmdline</th>
+                            <th>RSS/VSZ (KB)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in items)
+                        {
+                            <tr>
+                                <td style="white-space:nowrap;">@FormatEpochUtc(p.Ts)</td>
+                                <td class="fw-semibold">@((p.Pid?.ToString() ?? "-"))</td>
+                                <td>@((p.Ppid?.ToString() ?? "-"))</td>
+
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        @(p.Uid?.ToString() ?? "-"):@(p.Gid?.ToString() ?? "-")
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-secondary">@((string.IsNullOrWhiteSpace(p.State) ? "-" : p.State))</span>
+                                </td>
+
+                                <td style="max-width:220px;">
+                                    <div class="text-truncate" title="@p.Comm">@p.Comm</div>
+                                    <div class="text-muted" style="font-size:12px;">cwd: @((string.IsNullOrWhiteSpace(p.Cwd) ? "-" : p.Cwd))</div>
+                                </td>
+
+                                <td style="max-width:280px;">
+                                    <div class="text-truncate" title="@p.Exe">@p.Exe</div>
+                                </td>
+
+                                <td style="max-width:520px;">
+                                    <div class="text-truncate" title="@p.Cmdline">@p.Cmdline</div>
+                                </td>
+
+                                <td style="white-space:nowrap;">
+                                    @((p.VmRssKb?.ToString() ?? "-")) / @((p.VmSizeKb?.ToString() ?? "-"))
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (items.Count == 0)
+            {
+                <div class="text-muted">Nessun processo trovato.</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private const string ApiBase = "https://localhost:7140/";
+
+    private bool loading = true;
+    private string? error;
+
+    private List<LocalProcessEventDto> items = new();
+    private int skip = 0;
+    private int limit = 500;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task Refresh() => await LoadAsync();
+
+    private async Task Prev()
+    {
+        skip = Math.Max(0, skip - limit);
+        await LoadAsync();
+    }
+
+    private async Task Next()
+    {
+        skip += limit;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+        error = null;
+        items = new();
+
+        try
+        {
+            var http = Factory.CreateClient();
+            http.BaseAddress = new Uri(ApiBase);
+
+            var url = $"api/localProcesses?limit={limit}&skip={skip}";
+            var resp = await http.GetAsync(url);
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                error = $"HTTP {(int)resp.StatusCode} {resp.ReasonPhrase}\n\n{body}";
+                return;
+            }
+
+            var data = JsonSerializer.Deserialize<List<LocalProcessEventDto>>(
+                body,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
+
+            items = data ?? new List<LocalProcessEventDto>();
+        }
+        catch (Exception ex)
+        {
+            error = ex.ToString();
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private class LocalProcessEventDto
+    {
+        public string? Id { get; set; }
+        public long? Ts { get; set; }
+        public int? Pid { get; set; }
+        public int? Ppid { get; set; }
+        public string? State { get; set; }
+        public long? Uid { get; set; }
+        public long? Gid { get; set; }
+        public long? Start { get; set; }
+        public string? Comm { get; set; }
+        public string? Exe { get; set; }
+        public string? Cwd { get; set; }
+        public string? Cmdline { get; set; }
+        public long? VmRssKb { get; set; }
+        public long? VmSizeKb { get; set; }
+    }
+
+    private static string FormatEpochUtc(long? epochSeconds)
+    {
+        if (epochSeconds is null || epochSeconds <= 0) return "-";
+        try
+        {
+            var dt = DateTimeOffset.FromUnixTimeSeconds(epochSeconds.Value).UtcDateTime;
+            return dt.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+        catch
+        {
+            return epochSeconds.Value.ToString();
+        }
+    }
+}

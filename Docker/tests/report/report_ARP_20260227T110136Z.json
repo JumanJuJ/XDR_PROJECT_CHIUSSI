@@ -1,0 +1,142 @@
+{
+  "testType": "ARP_SPOOFING",
+  "timestampUtc": "2026-02-27T11:01:37.118Z",
+  "count": 5,
+  "incidents": [
+    {
+      "_id": "69a07de4f224739e8b785f3e",
+      "incidentId": {
+        "low": 21,
+        "high": 0,
+        "unsigned": false
+      },
+      "date": "2026-02-26T17:07:48.498Z",
+      "alert": {
+        "stixId": 3,
+        "srcIp": "172.25.0.21",
+        "srcMac": "92:bb:c9:1f:ba:4b",
+        "windowStart": {
+          "low": 1772125668,
+          "high": 0,
+          "unsigned": false
+        },
+        "windowEnd": {
+          "low": 1772125668,
+          "high": 0,
+          "unsigned": false
+        },
+        "malicious": true,
+        "message": "IP->MAC flapping detected: ip=172.25.0.21, macs=[62:73:ff:13:e3:75,92:bb:c9:1f:ba:4b]",
+        "detectedAtUtc": "2026-02-26T17:07:48.498Z"
+      }
+    },
+    {
+      "_id": "69a07cda533faf713a2ae60e",
+      "incidentId": {
+        "low": 20,
+        "high": 0,
+        "unsigned": false
+      },
+      "date": "2026-02-26T17:03:22.996Z",
+      "alert": {
+        "stixId": 3,
+        "srcIp": "172.25.0.21",
+        "srcMac": "9a:7e:db:78:d0:df",
+        "windowStart": {
+          "low": 1772125402,
+          "high": 0,
+          "unsigned": false
+        },
+        "windowEnd": {
+          "low": 1772125402,
+          "high": 0,
+          "unsigned": false
+        },
+        "malicious": true,
+        "message": "IP->MAC flapping detected: ip=172.25.0.21, macs=[72:37:3b:47:86:f4,9a:7e:db:78:d0:df]",
+        "detectedAtUtc": "2026-02-26T17:03:22.996Z"
+      }
+    },
+    {
+      "_id": "69a01ad38b47282c9cde2032",
+      "incidentId": {
+        "low": 19,
+        "high": 0,
+        "unsigned": false
+      },
+      "date": "2026-02-26T10:05:07.062Z",
+      "alert": {
+        "stixId": 3,
+        "srcIp": "172.25.0.21",
+        "srcMac": "3e:72:f0:4c:a4:9e",
+        "windowStart": {
+          "low": 1772100307,
+          "high": 0,
+          "unsigned": false
+        },
+        "windowEnd": {
+          "low": 1772100307,
+          "high": 0,
+          "unsigned": false
+        },
+        "malicious": true,
+        "message": "IP->MAC flapping detected: ip=172.25.0.21, macs=[22:29:bd:bf:80:c0,3e:72:f0:4c:a4:9e]",
+        "detectedAtUtc": "2026-02-26T10:05:07.062Z"
+      }
+    },
+    {
+      "_id": "69a01a38135c06b6e19565ef",
+      "incidentId": {
+        "low": 18,
+        "high": 0,
+        "unsigned": false
+      },
+      "date": "2026-02-26T10:02:32.393Z",
+      "alert": {
+        "stixId": 3,
+        "srcIp": "172.25.0.21",
+        "srcMac": "7e:82:42:eb:3b:ea",
+        "windowStart": {
+          "low": 1772100152,
+          "high": 0,
+          "unsigned": false
+        },
+        "windowEnd": {
+          "low": 1772100152,
+          "high": 0,
+          "unsigned": false
+        },
+        "malicious": true,
+        "message": "IP->MAC flapping detected: ip=172.25.0.21, macs=[5e:6c:0f:20:33:4e,7e:82:42:eb:3b:ea]",
+        "detectedAtUtc": "2026-02-26T10:02:32.393Z"
+      }
+    },
+    {
+      "_id": "69a01369d05c0be69e3cbfc1",
+      "incidentId": {
+        "low": 17,
+        "high": 0,
+        "unsigned": false
+      },
+      "date": "2026-02-26T09:33:29.801Z",
+      "alert": {
+        "stixId": 3,
+        "srcIp": "172.25.0.21",
+        "srcMac": "3e:7b:af:6c:b8:41",
+        "windowStart": {
+          "low": 1772098409,
+          "high": 0,
+          "unsigned": false
+        },
+        "windowEnd": {
+          "low": 1772098409,
+          "high": 0,
+          "unsigned": false
+        },
+        "malicious": true,
+        "message": "IP->MAC flapping detected: ip=172.25.0.21, macs=[9e:14:db:65:0a:d2,3e:7b:af:6c:b8:41]",
+        "detectedAtUtc": "2026-02-26T09:33:29.800Z"
+      }
+    }
+  ]
+}

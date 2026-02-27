@@ -1,0 +1,95 @@
+{
+  "testType": "LOCAL_MENACE",
+  "timestampUtc": "2026-02-27T20:32:59.361Z",
+  "count": 4,
+  "incidents": [
+    {
+      "_id": "698608c42065afa47d2500c6",
+      "incidentId": 4,
+      "type": "PRIVILEGE_ESCALATION",
+      "status": "UPDATE",
+      "active": true,
+      "detectedAtUtc": "2026-02-06T15:29:08.835Z",
+      "updatedAtUtc": "2026-02-27T11:02:22.196Z",
+      "alert": {
+        "stixId": 2,
+        "malicious": true,
+        "message": "A possibile privilege escalation has been found.File details: path: /bin/w, mode:4755, inode: 49990, sha: 992cdc13e4a62968f4c5c3a8dfdf598870722817aa093e8da2871f3a16cc78bd",
+        "path": "/bin/w",
+        "mode": "4755",
+        "inode": {
+          "low": 49990,
+          "high": 0,
+          "unsigned": false
+        },
+        "sha": "992cdc13e4a62968f4c5c3a8dfdf598870722817aa093e8da2871f3a16cc78bd"
+      }
+    },
+    {
+      "_id": "6975f7ce8f575544f276a066",
+      "incidentId": 3,
+      "type": "PRIVILEGE_ESCALATION",
+      "status": "UPDATE",
+      "active": true,
+      "detectedAtUtc": "2026-01-25T11:00:30.130Z",
+      "updatedAtUtc": "2026-01-25T18:49:06.969Z",
+      "alert": {
+        "stixId": 2,
+        "malicious": true,
+        "message": "A possibile privilege escalation has been found.File details: path: /bin/w, mode:4755, inode: 137147, sha: 992cdc13e4a62968f4c5c3a8dfdf598870722817aa093e8da2871f3a16cc78bd",
+        "path": "/bin/w",
+        "mode": "4755",
+        "inode": {
+          "low": 137147,
+          "high": 0,
+          "unsigned": false
+        },
+        "sha": "992cdc13e4a62968f4c5c3a8dfdf598870722817aa093e8da2871f3a16cc78bd"
+      }
+    },
+    {
+      "_id": "69545561593c2674bd64828b",
+      "incidentId": 2,
+      "type": "PRIVILEGE_ESCALATION",
+      "status": "NEW",
+      "active": true,
+      "detectedAtUtc": "2025-12-30T22:42:41.777Z",
+      "updatedAtUtc": "2025-12-30T22:42:41.777Z",
+      "alert": {
+        "stixId": 2,
+        "malicious": true,
+        "message": "menace found",
+        "path": "/bin/prova",
+        "mode": "4644",
+        "inode": {
+          "low": 21637,
+          "high": 0,
+          "unsigned": false
+        },
+        "sha": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "_id": "694eeedd0d1971e3ef9fcf7d",
+      "incidentId": 1,
+      "type": "PRIVILEGE_ESCALATION",
+      "status": "UPDATE",
+      "active": true,
+      "detectedAtUtc": "2025-12-26T20:23:57.141Z",
+      "updatedAtUtc": "2025-12-26T20:44:53.344Z",
+      "alert": {
+        "stixId": 2,
+        "malicious": true,
+        "message": "menace found",
+        "path": "/bin/w",
+        "mode": "4755",
+        "inode": {
+          "low": 59509,
+          "high": 0,
+          "unsigned": false
+        },
+        "sha": "4f59d91d36485e83d413e42fc6abb9158beb132822a0d8efee3fb54f7369d77b"
+      }
+    }
+  ]
+}
